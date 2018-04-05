@@ -22,6 +22,7 @@
 #include "Log.h"
 #include "ObjectDefines.h"
 #include "World.h"
+#include "ObjectMgr.h"
 
 void WorldSession::HandleDBQueryBulk(WorldPackets::Hotfix::DBQueryBulk& dbQuery)
 {
@@ -37,6 +38,150 @@ void WorldSession::HandleDBQueryBulk(WorldPackets::Hotfix::DBQueryBulk& dbQuery)
         WorldPackets::Hotfix::DBReply dbReply;
         dbReply.TableHash = dbQuery.TableHash;
         dbReply.RecordID = record.RecordID;
+
+        if (dbReply.TableHash == 2442913102) //Hash of itemsparse.db2
+        {
+            if (const ItemTemplate* proto = sObjectMgr->GetItemTemplate(dbReply.RecordID))
+            {
+                WorldPacket l_Data(SMSG_DB_REPLY);
+
+                l_Data << uint32(dbReply.TableHash);
+                l_Data << uint32(dbReply.RecordID);
+                l_Data << uint32(dbReply.Timestamp);
+                l_Data.WriteBit(dbReply.Allow);
+
+                l_Data.FlushBits();
+
+                ByteBuffer l_Buff;
+
+                l_Buff << uint32(proto->ItemId);
+                l_Buff << int32(proto->AllowableRace);
+
+                // item name
+                std::string name = proto->Name1;
+                l_Buff << uint16(name.length());
+                if (name.length())
+                    l_Buff << name;
+
+                for (uint32 i = 0; i < 3; ++i) // other 3 names
+                    l_Buff << uint16(0);
+
+                std::string desc = proto->Description;
+                l_Buff << uint16(desc.length());
+                if (desc.length())
+                    l_Buff << desc;
+
+                l_Buff << int32(proto->Flags);
+                l_Buff << int32(proto->Flags2);
+                l_Buff << int32(proto->Flags3);
+                l_Buff << int32(0);             //Flags 4
+                l_Buff << int32(0); //Unk1
+                l_Buff << int32(1); //Unk2
+                l_Buff << int32(proto->BuyCount);
+                l_Buff << int32(proto->BuyPrice);
+                l_Buff << int32(proto->SellPrice);
+                l_Buff << int32(proto->RequiredSpell);
+                l_Buff << int32(proto->MaxCount);
+                l_Buff << int32(proto->Stackable);
+
+                for (int i = 0; i < 10; i++)
+                    l_Buff << int32(proto->ItemStat[i].ItemScalingValue);
+
+                for (int i = 0; i < 10; i++)
+                    l_Buff << float(0.0f); //ItemStatSocketcostMultiplier
+
+                l_Buff << float(proto->RangedModRange);
+                l_Buff << int32(proto->BagFamily);
+                l_Buff << float(proto->ArmorDamageModifier);
+                l_Buff << int32(proto->Duration);
+                l_Buff << int32(proto->StatScalingFactor);
+                l_Buff << int32(proto->AllowableClass);
+                l_Buff << int32(proto->ItemLevel);
+                l_Buff << int32(proto->RequiredSkill);
+                l_Buff << int32(proto->RequiredSkillRank);
+                l_Buff << int32(proto->RequiredReputationFaction);
+
+                for (int i = 0; i < 10; i++)
+                    l_Buff << int32(proto->ItemStat[i].ItemStatValue);
+
+                l_Buff << int32(proto->ScalingStatDistribution);
+                l_Buff << int32(proto->Delay);
+                l_Buff << int32(proto->PageText);
+                l_Buff << int32(proto->StartQuest);
+                l_Buff << int32(proto->LockID);
+                l_Buff << int32(proto->RandomProperty);
+                l_Buff << int32(proto->RandomSuffix);
+                l_Buff << int32(proto->ItemSet);
+                l_Buff << int32(proto->Area);
+                l_Buff << int32(proto->Map);
+                l_Buff << int32(proto->TotemCategory);
+                l_Buff << int32(proto->socketBonus);
+                l_Buff << int32(proto->GemProperties);
+                l_Buff << int32(proto->ItemLimitCategory);
+                l_Buff << int32(proto->HolidayId);
+                l_Buff << int32(0); //RequiredTransmogHolidayId
+                l_Buff << int32(proto->ItemId); //Item Name Description Id
+                l_Buff << uint8(proto->Quality);
+                l_Buff << uint8(proto->_InventoryType);
+                l_Buff << uint8(proto->RequiredLevel);
+                l_Buff << uint8(proto->RequiredHonorRank);
+                l_Buff << uint8(proto->RequiredCityRank);
+                l_Buff << uint8(proto->ContainerSlots);
+
+                for (int i = 0; i < 10; i++)
+                    l_Buff << uint8(proto->ItemStat[i].ItemStatType);
+
+                l_Buff << uint8(proto->DamageType);
+                l_Buff << uint8(proto->Bonding);
+                l_Buff << uint8(proto->LanguageID);
+                l_Buff << uint8(proto->PageMaterial);
+                l_Buff << uint8(proto->Material);
+                l_Buff << uint8(proto->Sheath);
+
+                for (int i = 0; i < 3; i++)
+                    l_Buff << uint8(proto->Socket[i].Color);
+
+                l_Buff << uint8(proto->CurrencySubstitutionId);
+                l_Buff << uint8(proto->CurrencySubstitutionCount);
+                l_Buff << uint8(0); //ArtifactId
+                l_Buff << uint8(0); //RequiredExpansion
+
+                l_Data.append(l_Buff);
+                l_Data << uint32(l_Buff.size());
+
+                continue;
+            }
+        }
+
+        if (dbReply.TableHash == 1344507586) //Hash of item.db2
+        {
+            if (const ItemTemplate* proto = sObjectMgr->GetItemTemplate(dbReply.RecordID))
+            {
+                WorldPacket l_Data(SMSG_DB_REPLY);
+
+                ByteBuffer l_Buff;
+
+
+                l_Data << uint32(dbReply.TableHash);
+                l_Data << uint32(dbReply.RecordID);
+                l_Data << uint32(dbReply.Timestamp);
+                l_Data.WriteBit(dbReply.Allow);
+
+                l_Data.FlushBits();
+
+                l_Buff << uint32(proto->ItemId);
+                l_Buff << uint32(proto->DisplayInfoID);
+                l_Buff << uint8(proto->Class);
+                l_Buff << uint8(proto->SubClass);
+                l_Buff << uint8(proto->SoundOverrideSubclass);
+                l_Buff << uint8(proto->Material);
+                l_Buff << uint8(proto->_InventoryType);
+                l_Buff << uint8(proto->Sheath);
+                l_Buff << uint8(0);                     //GroupSoundsIds
+
+                continue;
+            }
+        }
 
         if (store->HasRecord(record.RecordID))
         {

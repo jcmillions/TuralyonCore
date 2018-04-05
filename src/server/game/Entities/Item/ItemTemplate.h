@@ -698,6 +698,30 @@ enum ItemLevelConstants : uint32
     MAX_ITEM_LEVEL = 1300
 };
 
+struct _ItemStat
+{
+    uint32  ItemStatType;
+    int32   ItemStatValue;
+    int32   ItemScalingValue;
+    float   ItemSocketCostRate;
+};
+
+struct _Spell
+{
+    int32 SpellId;                                         // id from Spell.dbc
+    uint32 SpellTrigger;
+    int32  SpellCharges;
+    int32  SpellCooldown;
+    uint32 SpellCategory;                                   // id from SpellCategory.dbc
+    int32  SpellCategoryCooldown;
+};
+
+struct _Socket
+{
+    uint32 Color;
+    uint32 Content;
+};
+
 class Player;
 struct ChrSpecializationEntry;
 
@@ -705,6 +729,84 @@ struct TC_GAME_API ItemTemplate
 {
     ItemEntry const* BasicData;
     ItemSparseEntry const* ExtendedData;
+
+    uint32 ItemId;
+    uint32 Class;                                           // id from ItemClass.dbc
+    uint32 SubClass;                                        // id from ItemSubClass.dbc
+    int32  SoundOverrideSubclass;                           // < 0: id from ItemSubClass.dbc, used to override weapon sound from actual SubClass
+    std::string Name1;
+    uint32 DisplayInfoID;                                   // id from ItemDisplayInfo.dbc
+    uint32 Quality;
+    uint32 Flags;
+    uint32 Flags2;
+    uint32 Flags3;
+    float Unk430_1;
+    float Unk430_2;
+    uint32 BuyCount;
+    int32  BuyPrice;
+    uint32 SellPrice;
+    uint32 _InventoryType;
+    uint32 AllowableClass;
+    uint32 AllowableRace;
+    uint32 ItemLevel;
+    uint32 RequiredLevel;
+    uint32 RequiredSkill;                                   // id from SkillLine.dbc
+    uint32 RequiredSkillRank;
+    uint32 RequiredSpell;                                   // id from Spell.dbc
+    uint32 RequiredHonorRank;
+    uint32 RequiredCityRank;
+    uint32 RequiredReputationFaction;                       // id from Faction.dbc
+    uint32 RequiredReputationRank;
+    int32  MaxCount;                                        // <= 0: no limit
+    int32  Stackable;                                       // 0: not allowed, -1: put in player coin info tab and don't limit stacking (so 1 slot)
+    uint32 ContainerSlots;
+    _ItemStat ItemStat[MAX_ITEM_PROTO_STATS];
+    uint32 ScalingStatDistribution;                         // id from ScalingStatDistribution.dbc
+    uint32 DamageType;                                      // id from Resistances.dbc
+    uint32 Delay;
+    float  RangedModRange;
+    _Spell Spells[5];
+    uint32 Bonding;
+    std::string Description;
+    uint32 PageText;
+    uint32 LanguageID;
+    uint32 PageMaterial;
+    uint32 StartQuest;                                      // id from QuestCache.wdb
+    uint32 LockID;
+    int32  Material;                                        // id from Material.dbc
+    uint32 Sheath;
+    int32  RandomProperty;                                  // id from ItemRandomProperties.dbc
+    int32  RandomSuffix;                                    // id from ItemRandomSuffix.dbc
+    uint32 ItemSet;                                         // id from ItemSet.dbc
+    uint32 MaxDurability;
+    uint32 Area;                                            // id from AreaTable.dbc
+    uint32 Map;                                             // id from Map.dbc
+    uint32 BagFamily;                                       // bit mask (1 << id from ItemBagFamily.dbc)
+    uint32 TotemCategory;                                   // id from TotemCategory.dbc
+    _Socket Socket[MAX_ITEM_PROTO_SOCKETS];
+    uint32 socketBonus;                                     // id from SpellItemEnchantment.dbc
+    uint32 GemProperties;                                   // id from GemProperties.dbc
+    float  ArmorDamageModifier;
+    uint32 Duration;
+    uint32 ItemLimitCategory;                               // id from ItemLimitCategory.dbc
+    uint32 HolidayId;                                       // id from Holidays.dbc
+    float  StatScalingFactor;
+    uint32 CurrencySubstitutionId;                          // May be used instead of a currency
+    uint32 CurrencySubstitutionCount;
+
+    // extra fields, not part of db2 files
+    float  DamageMin;
+    float  DamageMax;
+    float  DPS;
+    uint32 Armor;
+    float  SpellPPMRate;
+    uint32 ScriptId;
+    uint32 DisenchantID;
+    uint32 RequiredDisenchantSkill;
+    uint32 FoodType;
+    uint32 MinMoneyLoot;
+    uint32 MaxMoneyLoot;
+    uint32 FlagsCu;
 
     uint32 GetId() const { return BasicData->ID; }
     uint32 GetClass() const { return BasicData->Class; }
