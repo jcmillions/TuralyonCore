@@ -149,6 +149,7 @@ void WorldSession::HandleDBQueryBulk(WorldPackets::Hotfix::DBQueryBulk& dbQuery)
                 l_Data.append(l_Buff);
                 l_Data << uint32(l_Buff.size());
 
+                SendPacket(&l_Data);
                 continue;
             }
         }
@@ -179,6 +180,10 @@ void WorldSession::HandleDBQueryBulk(WorldPackets::Hotfix::DBQueryBulk& dbQuery)
                 l_Buff << uint8(proto->Sheath);
                 l_Buff << uint8(0);                     //GroupSoundsIds
 
+                l_Data.append(l_Buff);
+                l_Data << uint32(l_Buff.size());
+
+                SendPacket(&l_Data);
                 continue;
             }
         }
